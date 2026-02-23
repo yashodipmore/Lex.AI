@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import QuickAsk from "@/components/QuickAsk";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,7 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-white">
       <Navbar />
       <main>{children}</main>
+      <QuickAsk />
     </div>
   );
 }

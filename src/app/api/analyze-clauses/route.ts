@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { getUser } from "@/lib/auth";
 import DocumentModel from "@/models/Document";
 import ClauseModel from "@/models/Clause";
+import Activity from "@/models/Activity";
 import { getMasterAnalysisPrompt } from "@/lib/prompts";
 
 export async function POST(req: NextRequest) {
@@ -95,6 +96,14 @@ export async function POST(req: NextRequest) {
 
       await ClauseModel.insertMany(clauseDocs);
     }
+
+    // Log activity
+    await Activity.create({
+      userId: user.userId,
+      type: "document_analyzed",
+      description: `Analyzed "${fileName}" — ${analysis.document?.clause_count || 0} clauses, risk ${analysis.document?.overall_risk || "MEDIUM"}`,
+      metadata: { docId: doc._id, fileName, riskScore: analysis.document?.risk_score },
+    });
 
     return NextResponse.json({
       documentId: doc._id,

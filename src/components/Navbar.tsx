@@ -14,6 +14,9 @@ import {
   LogOut,
   Menu,
   X,
+  Bookmark,
+  BarChart3,
+  Bot,
 } from "lucide-react";
 
 const navItems = [
@@ -21,6 +24,9 @@ const navItems = [
   { href: "/compare", label: "Compare", icon: GitCompare },
   { href: "/roleplay", label: "Negotiate", icon: MessageSquare },
   { href: "/dispute", label: "Dispute", icon: FileWarning },
+  { href: "/chat", label: "Chat", icon: Bot },
+  { href: "/saved", label: "Saved", icon: Bookmark },
+  { href: "/insights", label: "Insights", icon: BarChart3 },
   { href: "/history", label: "History", icon: History },
 ];
 

@@ -63,6 +63,8 @@ export default function DashboardPage() {
   const [language, setLanguage] = useState("en");
   const [error, setError] = useState("");
   const [docType, setDocType] = useState("other");
+  const [documentId, setDocumentId] = useState<string | null>(null);
+  const [currentFileName, setCurrentFileName] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/auth");
@@ -88,6 +90,8 @@ export default function DashboardPage() {
 
         const data = await res.json();
         setAnalysis(data.analysis);
+        setDocumentId(data.documentId || null);
+        setCurrentFileName(fileName);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
@@ -261,7 +265,7 @@ export default function DashboardPage() {
               })
               .map((clause, i) => (
                 <ClauseCard
-                  key={clause.clauseNumber || clause["clause_number"] || i}
+                  key={clause.clauseNumber || Number(clause["clause_number"] || i)}
                   clause={{
                     clauseNumber: clause.clauseNumber || Number(clause["clause_number"] || 0),
                     clauseType: clause.clauseType || String(clause["clause_type"] || "other"),
@@ -279,6 +283,9 @@ export default function DashboardPage() {
                     isBlocking: clause.isBlocking || Boolean(clause["is_blocking"]),
                   }}
                   language={language}
+                  docName={currentFileName}
+                  docType={docType}
+                  docId={documentId || undefined}
                 />
               ))}
           </div>

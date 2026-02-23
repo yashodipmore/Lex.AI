@@ -10,7 +10,10 @@ import {
   AlertTriangle,
   CheckCircle,
   Volume2,
+  Bookmark,
+  Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import RiskBadge from "./RiskBadge";
 
 interface ClauseCardProps {
@@ -31,11 +34,16 @@ interface ClauseCardProps {
     isBlocking: boolean;
   };
   language: string;
+  docName?: string;
+  docType?: string;
+  docId?: string;
 }
 
-export default function ClauseCard({ clause, language }: ClauseCardProps) {
+export default function ClauseCard({ clause, language, docName, docType, docId }: ClauseCardProps) {
   const [expanded, setExpanded] = useState(clause.riskLevel === "HIGH" || clause.isIllegal);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const explanation = language === "hi" ? clause.explanationHi : clause.explanationEn;
 
@@ -44,6 +52,40 @@ export default function ClauseCard({ clause, language }: ClauseCardProps) {
       await navigator.clipboard.writeText(clause.counterClause);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleSave = async () => {
+    if (saving || saved) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/saved-clauses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          docId,
+          clauseType: clause.clauseType,
+          originalText: clause.originalText,
+          riskLevel: clause.riskLevel,
+          isIllegal: clause.isIllegal,
+          illegalLaw: clause.illegalLaw,
+          explanation: language === "hi" ? clause.explanationHi : clause.explanationEn,
+          counterClause: clause.counterClause,
+          actionAdvice: clause.actionAdvice,
+          docName: docName || "Unknown",
+          docType: docType || "other",
+        }),
+      });
+      if (res.ok) {
+        setSaved(true);
+        toast.success("Clause saved to library");
+      } else {
+        toast.error("Failed to save clause");
+      }
+    } catch {
+      toast.error("Failed to save clause");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -81,6 +123,20 @@ export default function ClauseCard({ clause, language }: ClauseCardProps) {
             BLOCKING
           </span>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); handleSave(); }}
+          disabled={saving || saved}
+          className={`p-1 rounded transition-colors cursor-pointer ${
+            saved ? "text-black" : "text-gray-300 hover:text-black"
+          }`}
+          title={saved ? "Saved" : "Save clause"}
+        >
+          {saving ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <Bookmark className={`w-3.5 h-3.5 ${saved ? "fill-current" : ""}`} />
+          )}
+        </button>
         {expanded ? (
           <ChevronUp className="w-4 h-4 text-gray-400" />
         ) : (

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import groq from "@/lib/groq";
 import { getUser } from "@/lib/auth";
+import { connectDB } from "@/lib/mongodb";
+import Activity from "@/models/Activity";
 import { getCompareContractsPrompt } from "@/lib/prompts";
 
 export async function POST(req: NextRequest) {
@@ -37,6 +39,15 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 });
     }
+
+    // Log activity
+    await connectDB();
+    await Activity.create({
+      userId: user.userId,
+      type: "comparison_done",
+      description: "Compared two contract versions",
+    });
+
     return NextResponse.json(result);
   } catch (error: unknown) {
     console.error("Compare contracts error:", error);

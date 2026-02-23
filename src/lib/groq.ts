@@ -13,7 +13,7 @@ function getGroq(): Groq {
 
 const groq = new Proxy({} as Groq, {
   get(_, prop) {
-    return (getGroq() as Record<string | symbol, unknown>)[prop];
+    return (getGroq() as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
 

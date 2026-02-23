@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import groq from "@/lib/groq";
 import { getUser } from "@/lib/auth";
+import { connectDB } from "@/lib/mongodb";
+import Activity from "@/models/Activity";
 import { getDisputeLetterPrompt } from "@/lib/prompts";
 
 export async function POST(req: NextRequest) {
@@ -100,6 +102,15 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 });
     }
+
+    // Log activity
+    await connectDB();
+    await Activity.create({
+      userId: user.userId,
+      type: "dispute_generated",
+      description: `Generated legal notice for "${receiverName}" regarding ${agreementType}`,
+    });
+
     return NextResponse.json(result);
   } catch (error: unknown) {
     console.error("Dispute letter error:", error);

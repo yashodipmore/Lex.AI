@@ -142,7 +142,7 @@ export default function DocumentDetailPage({
 
         <div className="space-y-3">
           {clauses.map((clause) => (
-            <ClauseCard key={clause.clauseNumber} clause={clause} language={language} />
+            <ClauseCard key={clause.clauseNumber} clause={clause} language={language} docName={document?.fileName} docType={document?.docType} docId={id} />
           ))}
         </div>
 

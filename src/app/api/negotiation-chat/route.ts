@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
 import groq from "@/lib/groq";
 import { getUser } from "@/lib/auth";
+import { connectDB } from "@/lib/mongodb";
+import Activity from "@/models/Activity";
 import { getNegotiationPrompt, getNegotiationDebriefPrompt } from "@/lib/prompts";
 
 export async function POST(req: NextRequest) {
@@ -39,6 +41,15 @@ export async function POST(req: NextRequest) {
       });
 
       const responseText = completion.choices[0]?.message?.content || "{}";
+
+      // Log debrief activity
+      await connectDB();
+      await Activity.create({
+        userId: user.userId,
+        type: "negotiation_done",
+        description: `Completed negotiation roleplay as ${persona}`,
+      });
+
       return new Response(JSON.stringify({ debrief: JSON.parse(responseText) }), {
         headers: { "Content-Type": "application/json" },
       });

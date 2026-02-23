@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
+import Activity from "@/models/Activity";
 import { signToken } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -46,6 +47,13 @@ export async function POST(req: NextRequest) {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
+    });
+
+    // Log login activity
+    await Activity.create({
+      userId: user._id.toString(),
+      type: "login",
+      description: "Logged in",
     });
 
     return response;
