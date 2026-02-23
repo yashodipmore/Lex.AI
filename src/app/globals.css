@@ -10,8 +10,8 @@
   --color-danger: #dc2626;
   --color-warning: #f59e0b;
   --color-success: #16a34a;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-dm-mono);
 }
 
 * {
@@ -28,6 +28,22 @@ body {
 ::selection {
   background: #111;
   color: #fff;
+}
+
+/* Pulsing dot for hero pill badge */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.8); }
+}
+
+/* Feature card instant hover — Section 4 */
+.feature-card {
+  border-left: 3px solid transparent;
+  transition: none;
+}
+.feature-card:hover {
+  border-left-color: #2563eb;
+  background-color: #fafeff;
 }
 
 /* Scrollbar */
