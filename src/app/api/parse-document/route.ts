@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { geminiModel } from "@/lib/gemini";
+import groq from "@/lib/groq";
 import { getUser } from "@/lib/auth";
 import { PDFParse } from "pdf-parse";
 import mammoth from "mammoth";
@@ -62,22 +62,30 @@ export async function POST(req: NextRequest) {
     ) {
       try {
         const docxBuffer = Buffer.from(bytes);
-        const result = await mammoth.extractRawText({ buffer: docxBuffer });
-        const rawText = result.value;
-
-        if (!rawText || rawText.trim().length === 0) {
+        let result;
+        try {
+          result = await mammoth.extractRawText({ buffer: docxBuffer });
+        } catch (mammothError) {
+          console.error("Mammoth failed to parse DOCX:", mammothError);
           return NextResponse.json(
-            { error: "Could not extract text from this document. It may be empty or corrupted." },
+            { error: "Failed to parse DOCX. The file may be corrupted or not a valid DOCX." },
             { status: 422 }
           );
         }
-
+        const rawText = result?.value;
+        if (!rawText || rawText.trim().length === 0) {
+          console.error("DOCX extracted text is empty or undefined.");
+          return NextResponse.json(
+            { error: "Could not extract text from this document. It may be empty, corrupted, or not a valid DOCX." },
+            { status: 422 }
+          );
+        }
         return NextResponse.json({ rawText: rawText.trim() });
       } catch (docxError) {
-        console.error("DOCX parse error:", docxError);
+        console.error("DOCX parse error (outer catch):", docxError);
         return NextResponse.json(
-          { error: "Failed to parse DOCX. The file may be corrupted." },
-          { status: 422 }
+          { error: "Failed to parse DOCX due to an unexpected error." },
+          { status: 500 }
         );
       }
     }
@@ -91,20 +99,19 @@ export async function POST(req: NextRequest) {
         const rawText = pdfData.text;
 
         if (!rawText || rawText.trim().length === 0) {
-          // Fallback: scanned PDF without text layer — try Gemini OCR
+          // Fallback: scanned PDF without text layer — try Groq Vision OCR
           const base64 = pdfBuffer.toString("base64");
-          const result = await geminiModel.generateContent([
-            {
-              inlineData: {
-                mimeType: "application/pdf" as const,
-                data: base64,
-              },
-            },
-            {
-              text: `Extract ALL text from this scanned PDF document. Preserve the structure, headings, numbered clauses, and formatting. Extract every single clause verbatim. Return ONLY the extracted text.`,
-            },
-          ]);
-          const ocrText = result.response.text();
+          const prompt = `Extract ALL text from this scanned PDF document. Preserve the structure, headings, numbered clauses, and formatting. Extract every single clause verbatim. Return ONLY the extracted text.`;
+          const completion = await groq.chat.completions.create({
+            messages: [
+              { role: "user", content: prompt },
+              { role: "user", content: { file: { data: base64, mimeType: "application/pdf" } } },
+            ],
+            model: "llava-vision-70b",
+            temperature: 0.15,
+            max_tokens: 6000,
+          });
+          const ocrText = completion.choices[0]?.message?.content;
           if (!ocrText || ocrText.trim().length === 0) {
             return NextResponse.json(
               { error: "Could not extract text from this PDF. It may be empty or corrupted." },
@@ -124,39 +131,26 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Image — use Gemini Vision OCR
+    // Image — use Groq Vision OCR
     const base64 = Buffer.from(bytes).toString("base64");
-    const mimeType = file.type as "image/png" | "image/jpeg" | "image/webp";
-
-    const result = await geminiModel.generateContent([
-      {
-        inlineData: {
-          mimeType,
-          data: base64,
-        },
-      },
-      {
-        text: `Extract ALL text from this image. Preserve the structure, headings, numbered clauses, and formatting as closely as possible. 
-        
-If it's a legal document (contract, agreement, lease, offer letter, NDA), extract every single clause, term, and condition. 
-Do not summarize — extract the COMPLETE text verbatim.
-If there are tables, preserve the table structure.
-If text is in Hindi or regional language, extract in the original language.
-
-Return ONLY the extracted text, nothing else.`,
-      },
-    ]);
-
-    const rawText = result.response.text();
-
-    if (!rawText || rawText.trim().length === 0) {
+    const prompt = `Extract ALL text from this image. Preserve the structure, headings, numbered clauses, and formatting as closely as possible.\n\nIf it's a legal document (contract, agreement, lease, offer letter, NDA), extract every single clause, term, and condition.\nDo not summarize — extract the COMPLETE text verbatim.\nIf there are tables, preserve the table structure.\nIf text is in Hindi or regional language, extract in the original language.\n\nReturn ONLY the extracted text, nothing else.`;
+    const completion = await groq.chat.completions.create({
+      messages: [
+        { role: "user", content: prompt },
+        { role: "user", content: { file: { data: base64, mimeType: file.type } } },
+      ],
+      model: "llava-vision-70b",
+      temperature: 0.15,
+      max_tokens: 6000,
+    });
+    const ocrText = completion.choices[0]?.message?.content;
+    if (!ocrText || ocrText.trim().length === 0) {
       return NextResponse.json(
         { error: "Could not extract text from this image. Try a clearer image." },
         { status: 422 }
       );
     }
-
-    return NextResponse.json({ rawText: rawText.trim() });
+    return NextResponse.json({ rawText: ocrText.trim() });
   } catch (error: unknown) {
     console.error("Parse document error:", error);
     return NextResponse.json({ error: "Failed to parse document" }, { status: 500 });
