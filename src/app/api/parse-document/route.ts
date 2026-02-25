@@ -104,10 +104,20 @@ export async function POST(req: NextRequest) {
           const prompt = `Extract ALL text from this scanned PDF document. Preserve the structure, headings, numbered clauses, and formatting. Extract every single clause verbatim. Return ONLY the extracted text.`;
           const completion = await groq.chat.completions.create({
             messages: [
-              { role: "user", content: prompt },
-              { role: "user", content: { file: { data: base64, mimeType: "application/pdf" } } },
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: prompt },
+                  {
+                    type: "image_url",
+                    image_url: {
+                      url: `data:application/pdf;base64,${base64}`,
+                    },
+                  },
+                ],
+              },
             ],
-            model: "llava-vision-70b",
+            model: "llava-v1.5-7b-4096-preview",
             temperature: 0.15,
             max_tokens: 6000,
           });
@@ -136,10 +146,20 @@ export async function POST(req: NextRequest) {
     const prompt = `Extract ALL text from this image. Preserve the structure, headings, numbered clauses, and formatting as closely as possible.\n\nIf it's a legal document (contract, agreement, lease, offer letter, NDA), extract every single clause, term, and condition.\nDo not summarize — extract the COMPLETE text verbatim.\nIf there are tables, preserve the table structure.\nIf text is in Hindi or regional language, extract in the original language.\n\nReturn ONLY the extracted text, nothing else.`;
     const completion = await groq.chat.completions.create({
       messages: [
-        { role: "user", content: prompt },
-        { role: "user", content: { file: { data: base64, mimeType: file.type } } },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${file.type};base64,${base64}`,
+              },
+            },
+          ],
+        },
       ],
-      model: "llava-vision-70b",
+      model: "llava-v1.5-7b-4096-preview",
       temperature: 0.15,
       max_tokens: 6000,
     });
