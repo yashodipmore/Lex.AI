@@ -189,12 +189,12 @@ export default function ChatPage() {
       <div
         className={`${
           sidebarOpen ? "w-72" : "w-0"
-        } bg-gray-50 border-r border-gray-200 flex flex-col transition-all duration-200 overflow-hidden shrink-0`}
+        } bg-gray-50/80 border-r border-gray-200 flex flex-col transition-all duration-200 overflow-hidden shrink-0`}
       >
         <div className="p-3 border-b border-gray-200">
           <button
             onClick={startNewChat}
-            className="flex items-center gap-2 w-full px-3 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+            className="flex items-center gap-2 w-full px-3 py-2.5 bg-black text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             New Chat
@@ -205,22 +205,25 @@ export default function ChatPage() {
           {loadingChats ? (
             <div className="p-4 space-y-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-12 bg-gray-200 rounded-lg animate-pulse" />
+                <div key={i} className="h-12 bg-gray-200 rounded-xl animate-pulse" />
               ))}
             </div>
           ) : chats.length === 0 ? (
-            <div className="p-4 text-center">
-              <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <div className="p-6 text-center">
+              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                <MessageSquare className="w-5 h-5 text-gray-400" />
+              </div>
               <p className="text-xs text-gray-400">No chats yet</p>
+              <p className="text-[10px] text-gray-300 mt-0.5">Start your first conversation</p>
             </div>
           ) : (
             <div className="p-2 space-y-1">
               {chats.map((chat) => (
                 <div
                   key={chat._id}
-                  className={`group flex items-start gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
+                  className={`group flex items-start gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
                     activeChatId === chat._id
-                      ? "bg-white border border-gray-200 shadow-sm"
+                      ? "bg-background border border-gray-200 shadow-sm"
                       : "hover:bg-gray-100"
                   }`}
                   onClick={() => loadChat(chat._id)}
@@ -249,10 +252,10 @@ export default function ChatPage() {
       {/* Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Chat header */}
-        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-200 bg-white">
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-200 bg-background">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             <MessageSquare className="w-4 h-4" />
           </button>
@@ -265,7 +268,7 @@ export default function ChatPage() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none cursor-pointer"
+            className="text-xs border border-gray-200 rounded-xl px-2.5 py-1.5 focus:outline-none cursor-pointer"
           >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -280,8 +283,8 @@ export default function ChatPage() {
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full">
               <div className="text-center mb-8">
-                <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <Bot className="w-7 h-7 text-gray-500" />
+                <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Bot className="w-8 h-8 text-gray-500" />
                 </div>
                 <h3 className="text-lg font-medium mb-1">Ask LexAI Anything</h3>
                 <p className="text-sm text-gray-400 max-w-sm">
@@ -295,7 +298,7 @@ export default function ChatPage() {
                   <button
                     key={i}
                     onClick={() => sendMessage(prompt)}
-                    className="text-left px-3 py-2.5 border border-gray-200 rounded-lg text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer"
+                    className="text-left px-4 py-3 border border-gray-200 rounded-xl text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-pointer"
                   >
                     {prompt}
                   </button>
@@ -349,7 +352,7 @@ export default function ChatPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-gray-200 bg-white px-4 py-3">
+        <div className="border-t border-gray-200 bg-background px-4 py-3">
           <div className="max-w-3xl mx-auto flex gap-2">
             <input
               type="text"

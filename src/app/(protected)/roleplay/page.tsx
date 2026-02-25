@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Send, Loader2, Trophy, RotateCcw } from "lucide-react";
+import { Send, Loader2, Trophy, RotateCcw, Swords } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 
 interface Message {
   role: "user" | "assistant";
@@ -148,32 +149,31 @@ export default function RoleplayPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold">Negotiation Roleplay</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
-          Practice negotiating with AI — 3 exchanges, then get a debrief
-        </p>
-      </div>
+      <PageHeader
+        icon={<Swords className="w-5 h-5" />}
+        title="Negotiation Roleplay"
+        subtitle="Practice negotiating with AI — 3 exchanges, then get a debrief"
+      />
 
       {!started ? (
         <div className="space-y-6">
-          <div>
+          <div className="border border-gray-200 rounded-xl p-5">
             <label className="block text-sm font-medium mb-2">Clause to negotiate</label>
             <textarea
               value={clauseText}
               onChange={(e) => setClauseText(e.target.value)}
               placeholder="Paste the clause you want to negotiate about..."
-              className="w-full h-32 px-3 py-2.5 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:border-gray-400"
+              className="w-full h-32 px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:border-gray-400"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Who are you negotiating with?</label>
+          <div className="border border-gray-200 rounded-xl p-5">
+            <label className="block text-sm font-medium mb-3">Who are you negotiating with?</label>
             <div className="flex gap-2">
               {["landlord", "employer", "client"].map((p) => (
                 <button
                   key={p}
                   onClick={() => setPersona(p)}
-                  className={`px-4 py-2 rounded-lg text-sm capitalize transition-colors cursor-pointer ${
+                  className={`px-4 py-2.5 rounded-xl text-sm capitalize transition-colors cursor-pointer ${
                     persona === p
                       ? "bg-black text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -187,32 +187,34 @@ export default function RoleplayPage() {
           <button
             onClick={() => setStarted(true)}
             disabled={clauseText.trim().length < 20}
-            className="px-5 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 bg-black text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
-            Start Negotiation
+            Start Negotiation →
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {/* Clause context */}
-          <div className="bg-gray-50 rounded-lg p-3 mb-4">
-            <p className="text-xs text-gray-400 mb-1">Negotiating about:</p>
+          <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-200">
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Negotiating about</p>
+              <span className="text-xs text-gray-400 capitalize">vs {persona}</span>
+            </div>
             <p className="text-sm text-gray-700 line-clamp-2">{clauseText}</p>
           </div>
 
-          {/* Exchange counter */}
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`w-8 h-1 rounded-full ${
-                    i <= exchangeCount ? "bg-black" : "bg-gray-200"
-                  }`}
-                />
-              ))}
+          {/* Exchange counter with progress bar */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-gray-500 font-medium">Progress</span>
+              <span className="text-xs text-gray-400">{exchangeCount}/3 exchanges</span>
             </div>
-            <span className="text-xs text-gray-400">{exchangeCount}/3 exchanges</span>
+            <div className="h-1.5 bg-gray-200 rounded-full">
+              <div
+                className="h-full bg-black rounded-full transition-all"
+                style={{ width: `${(exchangeCount / 3) * 100}%` }}
+              />
+            </div>
           </div>
 
           {/* Messages */}
@@ -277,14 +279,14 @@ export default function RoleplayPage() {
 
           {/* Debrief */}
           {debrief && (
-            <div className="border border-gray-200 rounded-xl p-5 mt-6">
+            <div className="border border-gray-200 rounded-xl p-6 mt-6">
               <div className="flex items-center gap-2 mb-4">
                 <Trophy className="w-5 h-5 text-amber-500" />
                 <h3 className="font-medium">Negotiation Debrief</h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
+                  <span className={`px-3 py-1.5 rounded-xl text-sm font-medium ${
                     debrief.outcome === "WIN" ? "bg-green-100 text-green-700" :
                     debrief.outcome === "PARTIAL_WIN" ? "bg-amber-100 text-amber-700" :
                     debrief.outcome === "LOSS" ? "bg-red-100 text-red-700" :
@@ -292,24 +294,24 @@ export default function RoleplayPage() {
                   }`}>
                     {debrief.outcome?.replace(/_/g, " ")}
                   </span>
-                  <span className="text-sm text-gray-500">Score: {debrief.score}/10</span>
+                  <span className="text-sm text-gray-500">Score: <strong>{debrief.score}/10</strong></span>
                   <span className="text-sm text-gray-400">
-                    Success probability: {debrief.probability_of_success}
+                    Success: {debrief.probability_of_success}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700">{debrief.outcome_explanation}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{debrief.outcome_explanation}</p>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-xs text-green-700 font-medium mb-1">What worked</p>
+                  <div className="bg-green-50 rounded-xl p-4">
+                    <p className="text-xs text-green-700 font-medium mb-1.5">✓ What worked</p>
                     <p className="text-sm text-green-800">{debrief.what_worked}</p>
                   </div>
-                  <div className="bg-amber-50 rounded-lg p-3">
-                    <p className="text-xs text-amber-700 font-medium mb-1">To improve</p>
+                  <div className="bg-amber-50 rounded-xl p-4">
+                    <p className="text-xs text-amber-700 font-medium mb-1.5">△ To improve</p>
                     <p className="text-sm text-amber-800">{debrief.what_to_improve}</p>
                   </div>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-3">
-                  <p className="text-xs text-blue-700 font-medium mb-1">Real-world tip</p>
+                <div className="bg-blue-50 rounded-xl p-4">
+                  <p className="text-xs text-blue-700 font-medium mb-1.5">💡 Real-world tip</p>
                   <p className="text-sm text-blue-800">{debrief.real_world_tip}</p>
                 </div>
               </div>

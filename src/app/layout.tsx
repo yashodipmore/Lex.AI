@@ -30,6 +30,10 @@ export const metadata: Metadata = {
   title: "LexAI — AI Legal Agent",
   description: "Upload any contract. Get instant legal analysis, illegal clause detection, counter-clauses, and negotiation training. Free, for everyone.",
   keywords: ["legal AI", "contract analysis", "Indian law", "illegal clause", "legal agent"],
+  icons: {
+    icon: "/logolex.png",
+    apple: "/logolex.png",
+  },
 };
 
 export default function RootLayout({
@@ -42,7 +46,6 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#111827" />
-        <link rel="icon" href="/favicon.ico" />
       </head>
       <body
         className={`${dmSans.variable} ${dmSerif.variable} ${dmMono.variable} font-[family-name:var(--font-dm-sans)] antialiased`}

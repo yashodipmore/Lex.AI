@@ -83,7 +83,7 @@ export default function QuickAsk() {
           onClick={() => setOpen(false)}
         >
           <div
-            className="absolute bottom-6 right-6 w-[380px] max-h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
+            className="absolute bottom-6 right-6 w-[380px] max-h-[500px] bg-background rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

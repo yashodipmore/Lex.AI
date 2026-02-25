@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { geminiModel } from "@/lib/gemini";
 import { getUser } from "@/lib/auth";
 import { PDFParse } from "pdf-parse";
+import mammoth from "mammoth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,6 +30,8 @@ export async function POST(req: NextRequest) {
 
     const allowedTypes = [
       "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/msword",
       "image/png",
       "image/jpeg",
       "image/webp",
@@ -37,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Unsupported file type. Upload PDF, image, or text file." },
+        { error: "Unsupported file type. Upload PDF, DOCX, image, or text file." },
         { status: 400 }
       );
     }
@@ -49,6 +52,35 @@ export async function POST(req: NextRequest) {
     }
 
     const bytes = await file.arrayBuffer();
+
+    // DOCX — use mammoth for text extraction
+    if (
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.type === "application/msword" ||
+      file.name?.endsWith(".docx") ||
+      file.name?.endsWith(".doc")
+    ) {
+      try {
+        const docxBuffer = Buffer.from(bytes);
+        const result = await mammoth.extractRawText({ buffer: docxBuffer });
+        const rawText = result.value;
+
+        if (!rawText || rawText.trim().length === 0) {
+          return NextResponse.json(
+            { error: "Could not extract text from this document. It may be empty or corrupted." },
+            { status: 422 }
+          );
+        }
+
+        return NextResponse.json({ rawText: rawText.trim() });
+      } catch (docxError) {
+        console.error("DOCX parse error:", docxError);
+        return NextResponse.json(
+          { error: "Failed to parse DOCX. The file may be corrupted." },
+          { status: 422 }
+        );
+      }
+    }
 
     // PDF — use pdf-parse for reliable local extraction
     if (file.type === "application/pdf") {

@@ -98,7 +98,7 @@ export default function UploadZone({ onFileUpload, onTextSubmit, loading }: Uplo
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept=".pdf,.png,.jpg,.jpeg,.webp,.txt"
+            accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,.txt"
             onChange={handleFileSelect}
           />
           {selectedFile ? (
@@ -131,7 +131,7 @@ export default function UploadZone({ onFileUpload, onTextSubmit, loading }: Uplo
                 <p className="text-sm text-gray-500">
                   Drop your document here or <span className="text-black font-medium">browse</span>
                 </p>
-                <p className="text-xs text-gray-400 mt-1">PDF, Images, or Text files</p>
+                <p className="text-xs text-gray-400 mt-1">PDF, DOCX, Images, or Text files</p>
               </div>
             </div>
           )}

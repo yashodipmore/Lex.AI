@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #ffffff;
+  --color-background: #fff5f6;
   --color-foreground: #111111;
   --color-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-surface: #f9fafb;
+  --color-border: #eddddf;
+  --color-surface: #fef0f1;
   --color-primary: #111111;
   --color-danger: #dc2626;
   --color-warning: #f59e0b;
@@ -36,14 +36,87 @@ body {
   50% { opacity: 0.4; transform: scale(1.8); }
 }
 
-/* Feature card instant hover — Section 4 */
+/* Feature card hover — Section 4 */
 .feature-card {
   border-left: 3px solid transparent;
-  transition: none;
+  transition: all 0.35s cubic-bezier(0.25, 0.4, 0.25, 1);
 }
 .feature-card:hover {
   border-left-color: #2563eb;
-  background-color: #fafeff;
+  background-color: #fef5f7;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.feature-card:hover .feature-icon {
+  transform: rotate(-8deg) scale(1.15);
+  color: #1d4ed8;
+}
+.feature-icon {
+  transition: all 0.35s cubic-bezier(0.25, 0.4, 0.25, 1);
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Mesh gradient animation for hero */
+@keyframes mesh-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Scroll-to-top */
+.scroll-top-btn {
+  transition: all 0.3s cubic-bezier(0.25, 0.4, 0.25, 1);
+}
+.scroll-top-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Counter animation */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* FAQ accordion */
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.25, 0.4, 0.25, 1), opacity 0.25s;
+  opacity: 0;
+}
+.faq-answer.open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.faq-answer > div {
+  overflow: hidden;
 }
 
 /* Scrollbar */
@@ -58,7 +131,7 @@ body {
   100% { background-position: 200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background: linear-gradient(90deg, #fef0f1 25%, #f5dfe1 50%, #fef0f1 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;

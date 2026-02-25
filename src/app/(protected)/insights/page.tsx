@@ -18,6 +18,7 @@ import {
   XCircle,
   CheckCircle,
 } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 import {
   BarChart,
   Bar,
@@ -85,8 +86,36 @@ export default function InsightsPage() {
       setLoading(true);
       const res = await fetch("/api/stats");
       if (res.ok) {
-        const data = await res.json();
-        setStats(data);
+        const raw = await res.json();
+        // API returns nested structure — flatten it for our Stats interface
+        const mapped: Stats = {
+          totalDocuments: raw.stats?.totalDocuments ?? 0,
+          totalClauses: raw.stats?.totalClauses ?? 0,
+          highRiskClauses: raw.stats?.highRiskClauses ?? 0,
+          illegalClauses: raw.stats?.illegalClauses ?? 0,
+          savedClauses: raw.stats?.savedClauses ?? 0,
+          totalChats: raw.stats?.totalChats ?? 0,
+          averageRiskScore: raw.stats?.avgRiskScore ?? 0,
+          streak: raw.stats?.streak ?? 0,
+          riskDistribution: raw.riskDistribution ?? { HIGH: 0, MEDIUM: 0, LOW: 0 },
+          verdictDistribution: raw.verdictDistribution ?? { DO_NOT_SIGN: 0, CONDITIONAL: 0, SAFE_TO_SIGN: 0 },
+          docTypeDistribution: raw.docTypeDistribution ?? {},
+          dailyActivity: (raw.dailyActivity ?? []).map((d: { _id: string; count: number }) => ({
+            date: d._id,
+            count: d.count,
+          })),
+          riskTrend: (raw.riskTrend ?? []).map((d: { name: string; score: number }) => ({
+            docName: d.name,
+            score: d.score,
+          })),
+          deadlines: (raw.upcomingDeadlines ?? []).map((d: { date: string; description: string; docName: string }) => ({
+            date: d.date,
+            label: d.description,
+            docName: d.docName,
+          })),
+          recentActivities: raw.recentActivities ?? [],
+        };
+        setStats(mapped);
       }
     } catch {
       /* silent */
@@ -146,18 +175,13 @@ export default function InsightsPage() {
   }));
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Header with Streak */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold flex items-center gap-2">
-            <BarChart3 className="w-5 h-5" />
-            Legal Insights
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Your legal health overview and analytics
-          </p>
-        </div>
+      <PageHeader
+        icon={<BarChart3 className="w-5 h-5" />}
+        title="Legal Insights"
+        subtitle="Your legal health overview and analytics"
+      >
         {stats.streak > 0 && (
           <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl">
             <Flame className="w-5 h-5 text-orange-500" />
@@ -167,7 +191,7 @@ export default function InsightsPage() {
             </div>
           </div>
         )}
-      </div>
+      </PageHeader>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
@@ -262,8 +286,10 @@ export default function InsightsPage() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[200px] flex items-center justify-center text-sm text-gray-400">
-              No activity data yet
+            <div className="h-[200px] flex flex-col items-center justify-center">
+              <Activity className="w-6 h-6 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">No activity data yet</p>
+              <p className="text-xs text-gray-300 mt-0.5">Analyze documents to see your daily activity</p>
             </div>
           )}
         </div>
@@ -309,8 +335,10 @@ export default function InsightsPage() {
               </div>
             </div>
           ) : (
-            <div className="h-[200px] flex items-center justify-center text-sm text-gray-400">
-              No clause data yet
+            <div className="h-[200px] flex flex-col items-center justify-center">
+              <AlertTriangle className="w-6 h-6 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">No clause data yet</p>
+              <p className="text-xs text-gray-300 mt-0.5">Risk distribution appears after analysis</p>
             </div>
           )}
         </div>
@@ -362,8 +390,9 @@ export default function InsightsPage() {
               </div>
             </div>
           ) : (
-            <div className="h-[180px] flex items-center justify-center text-sm text-gray-400">
-              No verdict data
+            <div className="h-[180px] flex flex-col items-center justify-center">
+              <Shield className="w-6 h-6 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">No verdict data</p>
             </div>
           )}
         </div>
@@ -385,8 +414,9 @@ export default function InsightsPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[180px] flex items-center justify-center text-sm text-gray-400">
-              No document data
+            <div className="h-[180px] flex flex-col items-center justify-center">
+              <FileText className="w-6 h-6 text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">No document data</p>
             </div>
           )}
         </div>

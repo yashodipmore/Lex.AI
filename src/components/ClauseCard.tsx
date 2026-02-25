@@ -123,12 +123,15 @@ export default function ClauseCard({ clause, language, docName, docType, docId }
             BLOCKING
           </span>
         )}
-        <button
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => { e.stopPropagation(); handleSave(); }}
-          disabled={saving || saved}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); handleSave(); } }}
+          aria-disabled={saving || saved}
           className={`p-1 rounded transition-colors cursor-pointer ${
             saved ? "text-black" : "text-gray-300 hover:text-black"
-          }`}
+          } ${saving || saved ? "pointer-events-none opacity-60" : ""}`}
           title={saved ? "Saved" : "Save clause"}
         >
           {saving ? (
@@ -136,7 +139,7 @@ export default function ClauseCard({ clause, language, docName, docType, docId }
           ) : (
             <Bookmark className={`w-3.5 h-3.5 ${saved ? "fill-current" : ""}`} />
           )}
-        </button>
+        </span>
         {expanded ? (
           <ChevronUp className="w-4 h-4 text-gray-400" />
         ) : (

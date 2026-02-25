@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { FileSearch } from "lucide-react";
 import UploadZone from "@/components/UploadZone";
 import VerdictBanner from "@/components/VerdictBanner";
 import SummaryCard from "@/components/SummaryCard";
@@ -11,6 +12,8 @@ import ClauseCard from "@/components/ClauseCard";
 import DangerTimeline from "@/components/DangerTimeline";
 import LanguageToggle from "@/components/LanguageToggle";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
+import PageHeader from "@/components/PageHeader";
+import WelcomeBanner from "@/components/WelcomeBanner";
 
 interface ClauseData {
   clauseNumber: number;
@@ -150,32 +153,31 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      {/* Welcome Banner */}
+      {!analysis && !analyzing && <WelcomeBanner />}
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-xl font-semibold">Analyze Document</h1>
-          <p className="text-sm text-gray-400 mt-0.5">
-            Upload a contract, agreement, or legal document
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <select
-            value={docType}
-            onChange={(e) => setDocType(e.target.value)}
-            className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none cursor-pointer"
-          >
-            <option value="other">Auto-detect</option>
-            <option value="rental">Rental Agreement</option>
-            <option value="employment">Employment Contract</option>
-            <option value="nda">NDA</option>
-            <option value="freelance">Freelance Contract</option>
-            <option value="loan">Loan Agreement</option>
-            <option value="tos">Terms of Service</option>
-          </select>
-          <LanguageToggle language={language} onChange={setLanguage} />
-        </div>
-      </div>
+      <PageHeader
+        icon={<FileSearch className="w-5 h-5" />}
+        title="Analyze Document"
+        subtitle="Upload a contract, agreement, or legal document"
+      >
+        <select
+          value={docType}
+          onChange={(e) => setDocType(e.target.value)}
+          className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none cursor-pointer"
+        >
+          <option value="other">Auto-detect</option>
+          <option value="rental">Rental Agreement</option>
+          <option value="employment">Employment Contract</option>
+          <option value="nda">NDA</option>
+          <option value="freelance">Freelance Contract</option>
+          <option value="loan">Loan Agreement</option>
+          <option value="tos">Terms of Service</option>
+        </select>
+        <LanguageToggle language={language} onChange={setLanguage} />
+      </PageHeader>
 
       {/* Upload Zone */}
       {!analysis && !analyzing && (

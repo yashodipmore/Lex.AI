@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Upload, Loader2, ArrowRight, Plus, Minus, RefreshCw } from "lucide-react";
+import { Upload, Loader2, ArrowRight, Plus, Minus, RefreshCw, GitCompare } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 
 interface Change {
   change_type: string;
@@ -109,12 +110,11 @@ export default function ComparePage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold">Compare Contracts</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
-          Upload old and new versions to see what changed
-        </p>
-      </div>
+      <PageHeader
+        icon={<GitCompare className="w-5 h-5" />}
+        title="Compare Contracts"
+        subtitle="Upload old and new versions to see what changed"
+      />
 
       {!result && (
         <>
@@ -143,7 +143,7 @@ export default function ComparePage() {
                   <input
                     type="file"
                     className="hidden"
-                    accept=".pdf,.png,.jpg,.jpeg,.txt"
+                    accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.txt"
                     onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0], "old")}
                   />
                 </label>
@@ -166,7 +166,7 @@ export default function ComparePage() {
                   <input
                     type="file"
                     className="hidden"
-                    accept=".pdf,.png,.jpg,.jpeg,.txt"
+                    accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.txt"
                     onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0], "new")}
                   />
                 </label>

@@ -20,6 +20,7 @@
     "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.575.0",
+    "mammoth": "^1.11.0",
     "mongoose": "^9.2.1",
     "next": "16.1.6",
     "nodemailer": "^8.0.1",

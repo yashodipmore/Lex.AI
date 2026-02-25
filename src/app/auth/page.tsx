@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Scale, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type AuthStep = "login" | "register" | "verify-otp";
 
@@ -60,7 +61,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -68,9 +69,14 @@ export default function AuthPage() {
             <ArrowLeft className="w-4 h-4 text-gray-400" />
             <span className="text-sm text-gray-400">Back</span>
           </Link>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Scale className="w-5 h-5" />
-            <span className="font-semibold text-lg tracking-tight">LexAI</span>
+          <div className="flex items-center justify-center mb-2">
+            <Image
+              src="/logolex.png"
+              alt="LexAI"
+              width={90}
+              height={90}
+              className="rounded-lg"
+            />
           </div>
           <p className="text-sm text-gray-400">
             {step === "login" && "Sign in to your account"}

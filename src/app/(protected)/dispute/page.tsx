@@ -22,6 +22,7 @@ import {
   ClipboardList,
   Shield,
 } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 
 interface FormData {
   senderName: string;
@@ -267,43 +268,59 @@ export default function DisputePage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <Scale className="w-5 h-5 text-gray-700" />
-          <h1 className="text-xl font-semibold">Legal Notice Generator</h1>
-        </div>
-        <p className="text-sm text-gray-400">
-          Generate a professional Indian legal notice — downloadable as DOCX, ready to print, sign & send via Registered A/D
-        </p>
-      </div>
+      <PageHeader
+        icon={<Scale className="w-5 h-5" />}
+        title="Legal Notice Generator"
+        subtitle="Generate a professional Indian legal notice — downloadable as DOCX, ready to print, sign & send via Registered A/D"
+      />
 
       {!result ? (
         <>
-          {/* Step indicator */}
-          <div className="flex items-center gap-2 mb-8">
-            {steps.map((s, i) => (
-              <div key={s.num} className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (s.num < step) setStep(s.num);
-                  }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    step === s.num
-                      ? "bg-black text-white"
-                      : step > s.num
-                      ? "bg-green-100 text-green-700 cursor-pointer hover:bg-green-200"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
-                >
-                  <s.icon className="w-3.5 h-3.5" />
-                  {s.label}
-                </button>
-                {i < steps.length - 1 && (
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
-                )}
-              </div>
-            ))}
+          {/* Step indicator - progress bar style */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              {steps.map((s, i) => (
+                <div key={s.num} className="flex items-center gap-2 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (s.num < step) setStep(s.num);
+                    }}
+                    className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${
+                      step === s.num
+                        ? "text-black"
+                        : step > s.num
+                        ? "text-green-600 cursor-pointer hover:text-green-700"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
+                        step === s.num
+                          ? "bg-black text-white"
+                          : step > s.num
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-400"
+                      }`}
+                    >
+                      {step > s.num ? "✓" : s.num}
+                    </div>
+                    <span className="hidden sm:inline">{s.label}</span>
+                  </button>
+                  {i < steps.length - 1 && (
+                    <div className="flex-1 mx-2">
+                      <div className="h-0.5 bg-gray-200 rounded-full">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            step > s.num ? "bg-green-500 w-full" : "bg-gray-200 w-0"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           <form
@@ -651,7 +668,7 @@ export default function DisputePage() {
               <div className="flex gap-2">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-lg text-xs hover:bg-white transition-colors cursor-pointer bg-white"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-lg text-xs hover:bg-background transition-colors cursor-pointer bg-background"
                 >
                   {copied ? (
                     <Check className="w-3 h-3 text-green-500" />
@@ -662,7 +679,7 @@ export default function DisputePage() {
                 </button>
                 <button
                   onClick={handleDownloadTxt}
-                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-lg text-xs hover:bg-white transition-colors cursor-pointer bg-white"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-lg text-xs hover:bg-background transition-colors cursor-pointer bg-background"
                 >
                   <Download className="w-3 h-3" />
                   .txt
@@ -681,7 +698,7 @@ export default function DisputePage() {
                 </button>
               </div>
             </div>
-            <div className="p-6 bg-white">
+            <div className="p-6 bg-background">
               <pre className="text-sm text-gray-700 whitespace-pre-wrap font-serif leading-relaxed">
                 {result.letter}
               </pre>

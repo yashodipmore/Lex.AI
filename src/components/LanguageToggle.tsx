@@ -12,7 +12,7 @@ export default function LanguageToggle({ language, onChange }: LanguageTogglePro
         onClick={() => onChange("en")}
         className={`px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
           language === "en"
-            ? "bg-white text-black font-medium shadow-sm"
+            ? "bg-background text-black font-medium shadow-sm"
             : "text-gray-500 hover:text-gray-700"
         }`}
       >
@@ -22,7 +22,7 @@ export default function LanguageToggle({ language, onChange }: LanguageTogglePro
         onClick={() => onChange("hi")}
         className={`px-3 py-1 text-xs rounded-md transition-colors cursor-pointer ${
           language === "hi"
-            ? "bg-white text-black font-medium shadow-sm"
+            ? "bg-background text-black font-medium shadow-sm"
             : "text-gray-500 hover:text-gray-700"
         }`}
       >

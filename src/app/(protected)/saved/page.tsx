@@ -18,6 +18,8 @@ import {
   Tag,
 } from "lucide-react";
 import { toast } from "sonner";
+import PageHeader from "@/components/PageHeader";
+import EmptyState from "@/components/EmptyState";
 
 interface SavedClause {
   _id: string;
@@ -119,17 +121,13 @@ export default function SavedClausesPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <Bookmark className="w-5 h-5" />
-          Saved Clauses
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Your personal legal clause library — {clauses.length} saved
-        </p>
-      </div>
+      <PageHeader
+        icon={<Bookmark className="w-5 h-5" />}
+        title="Saved Clauses"
+        subtitle={`Your personal legal clause library — ${clauses.length} saved`}
+      />
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -140,14 +138,14 @@ export default function SavedClausesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search clauses, notes, tags..."
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gray-400"
+            className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none cursor-pointer"
+            className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none cursor-pointer"
           >
             <option value="">All Risk</option>
             <option value="HIGH">High Risk</option>
@@ -157,7 +155,7 @@ export default function SavedClausesPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none cursor-pointer"
+            className="px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none cursor-pointer"
           >
             <option value="">All Types</option>
             {uniqueTypes.map((t) => (
@@ -177,13 +175,13 @@ export default function SavedClausesPage() {
           ))}
         </div>
       ) : clauses.length === 0 ? (
-        <div className="text-center py-16">
-          <Bookmark className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-gray-400 mb-1">No saved clauses</h3>
-          <p className="text-sm text-gray-400">
-            Analyze a document and save important clauses to build your library.
-          </p>
-        </div>
+        <EmptyState
+          icon={<Bookmark className="w-7 h-7" />}
+          title="No saved clauses"
+          description="Analyze a document and save important clauses to build your personal legal clause library."
+          actionLabel="Analyze a document"
+          actionHref="/dashboard"
+        />
       ) : (
         <div className="space-y-3">
           {clauses.map((clause) => {
@@ -276,7 +274,7 @@ export default function SavedClausesPage() {
                           <Copy className="w-3 h-3" /> Copy
                         </button>
                       </div>
-                      <p className="text-sm text-gray-700 bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-700 bg-background p-3 rounded-lg border border-gray-200">
                         {clause.originalText}
                       </p>
                     </div>
